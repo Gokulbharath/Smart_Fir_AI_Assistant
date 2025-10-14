@@ -112,7 +112,7 @@ const NewFIR: React.FC = () => {
   ];
 
   const renderStepIndicator = () => (
-    <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 mb-6">
+    <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 p-6 mb-6">
       <div className="flex items-center justify-between">
         {steps.map((step, index) => (
           <div key={step.number} className="flex items-center">
@@ -150,7 +150,7 @@ const NewFIR: React.FC = () => {
   );
 
   const renderVictimForm = () => (
-    <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-8">
+    <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 p-8">
       <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center">
         <User className="w-6 h-6 mr-3 text-blue-600" />
         Victim Information
@@ -224,7 +224,7 @@ const NewFIR: React.FC = () => {
   );
 
   const renderAccusedForm = () => (
-    <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-8">
+    <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 p-8">
       <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center">
         <AlertTriangle className="w-6 h-6 mr-3 text-red-600" />
         Accused Information
@@ -289,7 +289,7 @@ const NewFIR: React.FC = () => {
   );
 
   const renderIncidentForm = () => (
-    <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-8">
+    <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 p-8">
       <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center">
         <MapPin className="w-6 h-6 mr-3 text-green-600" />
         Incident Details
@@ -373,7 +373,7 @@ const NewFIR: React.FC = () => {
   );
 
   const renderIPCSections = () => (
-    <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-8">
+    <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 p-8">
       <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center">
         <Scale className="w-6 h-6 mr-3 text-purple-600" />
         Select Applicable IPC Sections
@@ -426,7 +426,7 @@ const NewFIR: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6">
+      <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 p-6">
         <div className="flex items-center space-x-4">
           <div className="bg-gradient-to-br from-green-600 to-emerald-700 dark:from-green-500 dark:to-emerald-600 rounded-xl p-3 shadow-lg">
             <FileText className="w-6 h-6 text-white" />
