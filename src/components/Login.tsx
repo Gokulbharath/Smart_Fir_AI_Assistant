@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Lock, Eye, EyeOff, Moon, Sun } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Moon, Sun, AlertCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import PoliceIcon from './PoliceIcon';
@@ -9,19 +9,28 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const { login } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
+    
     try {
       await login(email, password);
     } catch (error) {
-      console.error('Login failed:', error);
+      setError('Invalid credentials. Please try again.');
     }
     setIsLoading(false);
   };
+
+  const demoAccounts = [
+    { email: 'officer@police.gov.in', role: 'Officer', password: 'demo123' },
+    { email: 'inspector@police.gov.in', role: 'Inspector', password: 'demo123' },
+    { email: 'admin@police.gov.in', role: 'Admin', password: 'demo123' }
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-slate-100 dark:from-slate-900 dark:via-blue-900 dark:to-slate-800 flex items-center justify-center p-4">
@@ -32,9 +41,21 @@ const Login: React.FC = () => {
             <div className="mx-auto w-20 h-20 bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-blue-500 dark:to-indigo-600 rounded-full flex items-center justify-center mb-4 shadow-lg">
               <PoliceIcon className="w-12 h-12 text-white" />
             </div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">Smart FIR Assistant</h1>
-            <p className="text-slate-600 dark:text-slate-400 mt-2 font-medium">AI-Powered Legal Documentation System</p>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
+              Smart FIR Assistant
+            </h1>
+            <p className="text-slate-600 dark:text-slate-400 mt-2 font-medium">
+              AI-Powered Legal Documentation System
+            </p>
           </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center space-x-2 text-red-700 dark:text-red-400">
+              <AlertCircle className="w-5 h-5" />
+              <span className="text-sm font-medium">{error}</span>
+            </div>
+          )}
 
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -87,6 +108,30 @@ const Login: React.FC = () => {
               {isLoading ? 'Signing In...' : 'Sign In'}
             </button>
           </form>
+
+          {/* Demo Accounts */}
+          <div className="mt-8 p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Demo Accounts:</h3>
+            <div className="space-y-2">
+              {demoAccounts.map((account, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setEmail(account.email);
+                    setPassword(account.password);
+                  }}
+                  className="w-full text-left p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors"
+                >
+                  <div className="text-xs text-slate-600 dark:text-slate-400">
+                    <strong>{account.role}:</strong> {account.email}
+                  </div>
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+              Click any account above to auto-fill credentials
+            </p>
+          </div>
 
           {/* Theme Toggle */}
           <button
