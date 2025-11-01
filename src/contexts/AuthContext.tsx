@@ -15,6 +15,7 @@ export interface User {
 
 interface AuthContextType {
   user: User | null;
+  officer: User | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
@@ -96,6 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   return (
     <AuthContext.Provider value={{ 
       user, 
+      officer: user,
       login, 
       logout, 
       isAuthenticated: !!user,

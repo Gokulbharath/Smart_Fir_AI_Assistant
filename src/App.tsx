@@ -15,6 +15,10 @@ import CaseRetrieval from './components/CaseRetrieval';
 import InspectorReview from './components/InspectorReview';
 import ApprovedFIRs from './components/ApprovedFIRs';
 import Analytics from './components/Analytics';
+import Notifications from './components/Notifications';
+import Profile from './components/Profile';
+import Settings from './components/Settings';
+import AdminPanel from './components/AdminPanel';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated } = useAuth();
@@ -63,6 +67,10 @@ function App() {
                   <Route path="evidence" element={<EvidenceLocker />} />
                   <Route path="cases" element={<CaseRetrieval />} />
                   <Route path="analytics" element={<Analytics />} />
+                  <Route path="notifications" element={<Notifications />} />
+                  <Route path="profile" element={<Profile />} />
+                  <Route path="settings" element={<Settings />} />
+                  <Route path="admin" element={<AdminPanel />} />
                 </Route>
 
                 {/* Default redirect */}
