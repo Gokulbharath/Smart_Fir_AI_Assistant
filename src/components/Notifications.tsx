@@ -1,14 +1,5 @@
 import React from 'react';
-import { 
-  Bell, 
-  CheckCircle, 
-  AlertTriangle, 
-  Info, 
-  XCircle,
-  Calendar,
-  Trash2,
-  MarkAsRead
-} from 'lucide-react';
+import { Bell, CheckCircle, AlertTriangle, Info, XCircle, Calendar, Trash2, BookMarked as MarkAsRead } from 'lucide-react';
 import { useNotifications } from '../contexts/NotificationContext';
 
 const Notifications: React.FC = () => {

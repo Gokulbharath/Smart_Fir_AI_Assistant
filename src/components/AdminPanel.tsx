@@ -1,20 +1,5 @@
 import React, { useState } from 'react';
-import { 
-  Shield, 
-  Users, 
-  UserPlus, 
-  Edit3, 
-  Trash2,
-  BarChart3,
-  Settings,
-  Bell,
-  Database,
-  Activity,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  TrendingUp
-} from 'lucide-react';
+import { Shield, Users, UserPlus, CreditCard as Edit3, Trash2, BarChart3, Settings, Bell, Database, Activity, AlertTriangle, CheckCircle, Clock, TrendingUp } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 interface SystemUser {

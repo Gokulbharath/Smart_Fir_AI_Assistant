@@ -1,17 +1,5 @@
 import React, { useState } from 'react';
-import { 
-  User, 
-  Mail, 
-  Shield, 
-  MapPin, 
-  Phone,
-  Calendar,
-  Edit3,
-  Save,
-  X,
-  Camera,
-  Award
-} from 'lucide-react';
+import { User, Mail, Shield, MapPin, Phone, Calendar, CreditCard as Edit3, Save, X, Camera, Award } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const Profile: React.FC = () => {
