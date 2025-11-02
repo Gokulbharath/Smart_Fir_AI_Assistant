@@ -1,21 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  Send, 
-  Mic, 
-  MicOff, 
-  Bot, 
-  User, 
-  FileText, 
-  Scale,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  MapPin,
-  Calendar,
-  X,
-  Edit3,
-  Eye
-} from 'lucide-react';
+import { Send, Mic, MicOff, Bot, User, FileText, Scale, AlertTriangle, CheckCircle, Clock, MapPin, Calendar, X, CreditCard as Edit3, Eye } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../contexts/NotificationContext';
 import PoliceIcon from './PoliceIcon';
