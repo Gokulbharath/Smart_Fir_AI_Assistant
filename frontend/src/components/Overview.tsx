@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   FileText, 
   Bot, 
@@ -16,6 +17,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 const Overview: React.FC = () => {
   const { officer } = useAuth();
+  const navigate = useNavigate();
 
   const stats = [
     {
@@ -161,6 +163,7 @@ const Overview: React.FC = () => {
           {quickActions.map((action, index) => (
             <button
               key={index}
+              onClick={() => navigate(action.action)}
               className="p-6 border border-slate-200 dark:border-slate-600 rounded-xl hover:shadow-xl transition-all duration-300 text-left group hover:-translate-y-1 bg-gradient-to-br from-white to-slate-50 dark:from-slate-700 dark:to-slate-800"
             >
               <div className={`${action.color} rounded-xl p-4 w-fit mb-4 group-hover:scale-110 transition-transform shadow-lg`}>

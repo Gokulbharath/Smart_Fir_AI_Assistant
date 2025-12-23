@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { 
   Eye, 
   CheckCircle, 
@@ -9,7 +9,6 @@ import {
   MapPin,
   Scale,
   FileText,
-  MessageSquare,
   AlertTriangle
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -31,12 +30,14 @@ interface FIRForReview {
 }
 
 const InspectorReview: React.FC = () => {
-  const { user, hasPermission } = useAuth();
+  const { hasPermission } = useAuth();
   const { addNotification } = useNotifications();
   const [selectedFIR, setSelectedFIR] = useState<FIRForReview | null>(null);
   const [reviewComment, setReviewComment] = useState('');
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [reviewAction, setReviewAction] = useState<'approve' | 'reject'>('approve');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [priorityFilter, setPriorityFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all');
 
   const firsForReview: FIRForReview[] = [
     {
@@ -91,6 +92,21 @@ const InspectorReview: React.FC = () => {
     }
   };
 
+  const filteredFIRs = useMemo(() => {
+    const bySearch = (f: FIRForReview) => {
+      const q = searchTerm.toLowerCase();
+      return (
+        f.title.toLowerCase().includes(q) ||
+        f.firNumber.toLowerCase().includes(q) ||
+        f.victim.toLowerCase().includes(q) ||
+        f.submittedBy.toLowerCase().includes(q) ||
+        f.location.toLowerCase().includes(q)
+      );
+    };
+    const byPriority = (f: FIRForReview) => priorityFilter === 'all' || f.priority === priorityFilter;
+    return firsForReview.filter(f => bySearch(f) && byPriority(f));
+  }, [firsForReview, searchTerm, priorityFilter]);
+
   const handleReview = (fir: FIRForReview, action: 'approve' | 'reject') => {
     setSelectedFIR(fir);
     setReviewAction(action);
@@ -130,65 +146,91 @@ const InspectorReview: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center space-x-4">
-          <div className="bg-gradient-to-br from-orange-600 to-red-700 dark:from-orange-500 dark:to-red-600 rounded-xl p-3 shadow-lg">
+          <div className="bg-orange-600 rounded-lg p-3">
             <Eye className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 dark:from-orange-400 dark:to-red-400 bg-clip-text text-transparent">
-              Inspector Review
-            </h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Inspector Review</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">
               Review and approve FIR drafts submitted by officers
             </p>
           </div>
         </div>
       </div>
 
+      {/* Search and Filter */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1 relative">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search FIRs by title, number, victim, officer, or location..."
+              className="w-full pl-3 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            />
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-500 dark:text-gray-400">Priority</span>
+            <select
+              value={priorityFilter}
+              onChange={(e) => setPriorityFilter(e.target.value as any)}
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            >
+              <option value="all">All</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 p-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center space-x-3">
-            <div className="bg-yellow-100 dark:bg-yellow-900/30 rounded-xl p-3">
+            <div className="bg-yellow-100 dark:bg-yellow-900/30 rounded-lg p-2">
               <Clock className="w-6 h-6 text-yellow-600" />
             </div>
             <div>
-              <p className="text-3xl font-bold text-slate-900 dark:text-white">8</p>
-              <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Pending Review</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">8</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Pending Review</p>
             </div>
           </div>
         </div>
-        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center space-x-3">
-            <div className="bg-green-100 dark:bg-green-900/30 rounded-xl p-3">
+            <div className="bg-green-100 dark:bg-green-900/30 rounded-lg p-2">
               <CheckCircle className="w-6 h-6 text-green-600" />
             </div>
             <div>
-              <p className="text-3xl font-bold text-slate-900 dark:text-white">23</p>
-              <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Approved Today</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">23</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Approved Today</p>
             </div>
           </div>
         </div>
-        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center space-x-3">
-            <div className="bg-red-100 dark:bg-red-900/30 rounded-xl p-3">
+            <div className="bg-red-100 dark:bg-red-900/30 rounded-lg p-2">
               <XCircle className="w-6 h-6 text-red-600" />
             </div>
             <div>
-              <p className="text-3xl font-bold text-slate-900 dark:text-white">2</p>
-              <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Rejected</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">2</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Rejected</p>
             </div>
           </div>
         </div>
-        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center space-x-3">
-            <div className="bg-red-100 dark:bg-red-900/30 rounded-xl p-3">
+            <div className="bg-red-100 dark:bg-red-900/30 rounded-lg p-2">
               <AlertTriangle className="w-6 h-6 text-red-600" />
             </div>
             <div>
-              <p className="text-3xl font-bold text-slate-900 dark:text-white">3</p>
-              <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">High Priority</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">3</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">High Priority</p>
             </div>
           </div>
         </div>
@@ -197,11 +239,11 @@ const InspectorReview: React.FC = () => {
       {/* FIRs for Review */}
       <div className="space-y-4">
         <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-          FIRs Pending Review ({firsForReview.length})
+          FIRs Pending Review ({filteredFIRs.length})
         </h2>
         
-        {firsForReview.map((fir) => (
-          <div key={fir.id} className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+        {filteredFIRs.map((fir) => (
+          <div key={fir.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
                 <div className="flex items-center space-x-3 mb-2">
@@ -257,14 +299,14 @@ const InspectorReview: React.FC = () => {
               <div className="flex items-center space-x-3">
                 <button
                   onClick={() => handleReview(fir, 'reject')}
-                  className="flex items-center space-x-2 px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-xl hover:bg-red-200 dark:hover:bg-red-900/50 transition-all duration-200 font-semibold"
+                  className="flex items-center space-x-2 px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors font-semibold"
                 >
                   <XCircle className="w-4 h-4" />
                   <span>Reject</span>
                 </button>
                 <button
                   onClick={() => handleReview(fir, 'approve')}
-                  className="flex items-center space-x-2 px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-xl hover:bg-green-200 dark:hover:bg-green-900/50 transition-all duration-200 font-semibold"
+                  className="flex items-center space-x-2 px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-lg hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors font-semibold"
                 >
                   <CheckCircle className="w-4 h-4" />
                   <span>Approve</span>

@@ -7,13 +7,16 @@ import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import Overview from './components/Overview';
 import Chatbot from './components/Chatbot';
-import FIRDrafts from './components/FIRDrafts';
+import FIRDrafts from './pages/FIRDrafts';
 import FIRDraftPreview from './components/FIRDraftPreview';
 import NewFIR from './components/NewFIR';
+import DraftFIRCreation from './pages/DraftFIRCreation';
+import FinalFIRView from './pages/FinalFIRView';
 import EvidenceLocker from './components/EvidenceLocker';
 import CaseRetrieval from './components/CaseRetrieval';
-import InspectorReview from './components/InspectorReview';
-import ApprovedFIRs from './components/ApprovedFIRs';
+// import InspectorReview from './components/InspectorReview';
+import ApprovedFIRs from './pages/ApprovedFIRs';
+import InspectorDashboard from './pages/InspectorDashboard';
 import Analytics from './components/Analytics';
 import Notifications from './components/Notifications';
 import Profile from './components/Profile';
@@ -60,10 +63,12 @@ function App() {
                   <Route index element={<Overview />} />
                   <Route path="chatbot" element={<Chatbot />} />
                   <Route path="new-fir" element={<NewFIR />} />
+                  <Route path="create-draft-fir" element={<DraftFIRCreation />} />
                   <Route path="fir-drafts" element={<FIRDrafts />} />
                   <Route path="fir-preview" element={<FIRDraftPreview />} />
-                  <Route path="inspector-review" element={<InspectorReview />} />
+                  <Route path="inspector-review" element={<InspectorDashboard />} />
                   <Route path="approved-firs" element={<ApprovedFIRs />} />
+                  <Route path="final-firs" element={<FinalFIRView />} />
                   <Route path="evidence" element={<EvidenceLocker />} />
                   <Route path="cases" element={<CaseRetrieval />} />
                   <Route path="analytics" element={<Analytics />} />
