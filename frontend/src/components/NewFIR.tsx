@@ -1,5 +1,6 @@
 // src/components/NewFIR.tsx
 import React, { useState } from 'react';
+import BackButton from './BackButton';
 import { createDraft, submitFIR } from '../api/firService';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../contexts/NotificationContext';
@@ -552,6 +553,8 @@ const NewFIR: React.FC = () => {
         </div>
       )}
 
+      {/* Back Button */}
+      <BackButton />
       {/* Header */}
       <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 p-6">
         <div className="flex items-center space-x-4">

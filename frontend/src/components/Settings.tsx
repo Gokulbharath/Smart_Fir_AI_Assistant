@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import BackButton from './BackButton';
 import { 
   Settings as SettingsIcon, 
   Moon, 
@@ -11,40 +12,139 @@ import {
   RefreshCw,
   Save,
   AlertTriangle,
-  CheckCircle
+  CheckCircle,
+  Loader2
 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useNotifications } from '../contexts/NotificationContext';
+import { getProfile, updateSettings, type Settings as SettingsType } from '../api/profileService';
 
 const Settings: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
-  const { user, hasPermission } = useAuth();
-  const [notifications, setNotifications] = useState({
-    email: true,
-    push: true,
-    sms: false,
-    firApproval: true,
-    systemUpdates: true
+  const { user } = useAuth();
+  const { addNotification } = useNotifications();
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [settings, setSettings] = useState<SettingsType>({
+    theme: 'light',
+    autoSave: true,
+    dataRetention: '1year',
+    notifications: {
+      email: true,
+      push: true,
+      sms: false,
+      firApproval: true,
+      systemUpdates: true
+    }
   });
-  const [autoSave, setAutoSave] = useState(true);
-  const [dataRetention, setDataRetention] = useState('1year');
+
+  // Load settings on mount
+  useEffect(() => {
+    if (user?.email) {
+      loadSettings();
+    }
+  }, [user?.email]);
+
+  const loadSettings = async () => {
+    if (!user?.email) return;
+    
+    try {
+      setLoading(true);
+      const profile = await getProfile(user.email);
+      if (profile.settings) {
+        setSettings(profile.settings);
+      }
+    } catch (error: any) {
+      console.error('Failed to load settings:', error);
+      addNotification({
+        title: 'Error',
+        message: error.message || 'Failed to load settings',
+        type: 'error'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleNotificationChange = (key: string, value: boolean) => {
-    setNotifications(prev => ({ ...prev, [key]: value }));
+    setSettings(prev => ({
+      ...prev,
+      notifications: {
+        ...prev.notifications,
+        [key]: value
+      }
+    }));
+  };
+
+  const handleSave = async () => {
+    if (!user?.email) return;
+    
+    try {
+      setSaving(true);
+      const updatedSettings = await updateSettings(user.email, settings);
+      setSettings(updatedSettings);
+      
+      // Update theme if changed
+      if (settings.theme !== theme) {
+        if (settings.theme === 'dark' && theme === 'light') {
+          toggleTheme();
+        } else if (settings.theme === 'light' && theme === 'dark') {
+          toggleTheme();
+        }
+      }
+      
+      addNotification({
+        title: 'Success',
+        message: 'Settings saved successfully',
+        type: 'success'
+      });
+    } catch (error: any) {
+      console.error('Failed to save settings:', error);
+      addNotification({
+        title: 'Error',
+        message: error.message || 'Failed to save settings',
+        type: 'error'
+      });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleBackup = () => {
     // Simulate backup process
     console.log('Starting backup...');
+    addNotification({
+      title: 'Info',
+      message: 'Backup feature coming soon',
+      type: 'info'
+    });
   };
 
   const handleModelUpdate = () => {
     // Simulate AI model update
     console.log('Updating AI model...');
+    addNotification({
+      title: 'Info',
+      message: 'AI model update feature coming soon',
+      type: 'info'
+    });
   };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <BackButton />
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
+      <BackButton />
       {/* Header */}
       <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 p-6">
         <div className="flex items-center space-x-4">
@@ -77,17 +177,20 @@ const Settings: React.FC = () => {
                 <p className="text-sm text-slate-500 dark:text-slate-400">Choose your preferred theme</p>
               </div>
               <button
-                onClick={toggleTheme}
+                onClick={() => {
+                  const newTheme = settings.theme === 'dark' ? 'light' : 'dark';
+                  setSettings(prev => ({ ...prev, theme: newTheme }));
+                }}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  theme === 'dark' ? 'bg-blue-600' : 'bg-slate-200'
+                  settings.theme === 'dark' ? 'bg-blue-600' : 'bg-slate-200'
                 }`}
               >
                 <span
                   className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    theme === 'dark' ? 'translate-x-6' : 'translate-x-1'
+                    settings.theme === 'dark' ? 'translate-x-6' : 'translate-x-1'
                   }`}
                 />
-                {theme === 'dark' ? (
+                {settings.theme === 'dark' ? (
                   <Moon className="absolute left-1 w-3 h-3 text-blue-600" />
                 ) : (
                   <Sun className="absolute right-1 w-3 h-3 text-slate-400" />
@@ -101,14 +204,14 @@ const Settings: React.FC = () => {
                 <p className="text-sm text-slate-500 dark:text-slate-400">Automatically save FIR drafts</p>
               </div>
               <button
-                onClick={() => setAutoSave(!autoSave)}
+                onClick={() => setSettings(prev => ({ ...prev, autoSave: !prev.autoSave }))}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  autoSave ? 'bg-green-600' : 'bg-slate-200 dark:bg-slate-600'
+                  settings.autoSave ? 'bg-green-600' : 'bg-slate-200 dark:bg-slate-600'
                 }`}
               >
                 <span
                   className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    autoSave ? 'translate-x-6' : 'translate-x-1'
+                    settings.autoSave ? 'translate-x-6' : 'translate-x-1'
                   }`}
                 />
               </button>
@@ -141,14 +244,14 @@ const Settings: React.FC = () => {
                   </p>
                 </div>
                 <button
-                  onClick={() => handleNotificationChange(key, !notifications[key as keyof typeof notifications])}
+                  onClick={() => handleNotificationChange(key, !settings.notifications[key as keyof typeof settings.notifications])}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    notifications[key as keyof typeof notifications] ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-600'
+                    settings.notifications[key as keyof typeof settings.notifications] ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-600'
                   }`}
                 >
                   <span
                     className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      notifications[key as keyof typeof notifications] ? 'translate-x-6' : 'translate-x-1'
+                      settings.notifications[key as keyof typeof settings.notifications] ? 'translate-x-6' : 'translate-x-1'
                     }`}
                   />
                 </button>
@@ -168,8 +271,8 @@ const Settings: React.FC = () => {
             <div>
               <h3 className="font-semibold text-slate-900 dark:text-white mb-2">Data Retention</h3>
               <select
-                value={dataRetention}
-                onChange={(e) => setDataRetention(e.target.value)}
+                value={settings.dataRetention}
+                onChange={(e) => setSettings(prev => ({ ...prev, dataRetention: e.target.value as any }))}
                 className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-medium"
               >
                 <option value="6months">6 Months</option>
@@ -187,7 +290,7 @@ const Settings: React.FC = () => {
         </div>
 
         {/* System Settings (Admin Only) */}
-        {hasPermission('system_settings') && (
+        {user?.permissions?.includes('system_settings') && (
           <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 p-6">
             <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center">
               <Database className="w-5 h-5 mr-2" />
@@ -222,9 +325,13 @@ const Settings: React.FC = () => {
 
       {/* Save Button */}
       <div className="flex justify-end">
-        <button className="flex items-center space-x-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-colors shadow-lg">
-          <Save className="w-4 h-4" />
-          <span>Save Settings</span>
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="flex items-center space-x-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+          <span>{saving ? 'Saving...' : 'Save Settings'}</span>
         </button>
       </div>
     </div>

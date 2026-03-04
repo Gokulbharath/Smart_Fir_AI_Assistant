@@ -1,5 +1,6 @@
 import React from 'react';
 import { Bell, CheckCircle, AlertTriangle, Info, XCircle, Calendar, Trash2, BookMarked as MarkAsRead } from 'lucide-react';
+import BackButton from './BackButton';
 import { useNotifications } from '../contexts/NotificationContext';
 
 const Notifications: React.FC = () => {
@@ -26,6 +27,8 @@ const Notifications: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Back Button */}
+      <BackButton />
       {/* Header */}
       <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 p-6">
         <div className="flex items-center justify-between">

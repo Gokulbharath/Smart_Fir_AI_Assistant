@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getFinalFIRs, pdfUrl } from "../api/firService";
+import { getFinalFIRs, downloadFIRPdf } from "../api/firService";
 import { useNotifications } from "../contexts/NotificationContext";
 import { Search, FileText, Download, CheckCircle } from "lucide-react";
 
@@ -149,15 +149,13 @@ export default function FinalFIRView() {
                 <FileText className="w-4 h-4" />
                 View Details
               </button>
-              <a
-                href={pdfUrl(fir._id)}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={() => downloadFIRPdf(fir._id)}
                 className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium flex items-center gap-2"
               >
                 <Download className="w-4 h-4" />
                 Download PDF
-              </a>
+              </button>
             </div>
           </div>
         ))}
@@ -221,6 +219,7 @@ export default function FinalFIRView() {
     </div>
   );
 }
+
 
 
 

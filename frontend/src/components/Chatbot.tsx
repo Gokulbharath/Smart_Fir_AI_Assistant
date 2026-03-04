@@ -3,6 +3,7 @@ import { Send, Mic, MicOff, Bot, User, FileText, AlertTriangle, Clock, MapPin, X
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../contexts/NotificationContext';
 import PoliceIcon from './PoliceIcon';
+import BackButton from './BackButton';
 import { createFIR } from '../api/firService';
 
 const BACKEND_URL = import.meta.env.VITE_CHATBOT_API_BASE_URL || "http://localhost:8000";
@@ -265,6 +266,10 @@ const Chatbot: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full min-h-0 bg-white dark:bg-slate-900 transition-colors duration-300">
+      {/* Back Button */}
+      <div className="p-4 border-b border-slate-200 dark:border-slate-700">
+        <BackButton />
+      </div>
       {/* CHAT BODY */}
       <div className="flex-1 min-h-0 overflow-y-auto">
         <div className="mx-auto w-full max-w-4xl p-4 space-y-6 pb-[104px] sm:pb-[96px]">

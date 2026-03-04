@@ -1,0 +1,130 @@
+export const ROLE_PERMISSIONS = {
+  CONSTABLE: [
+    "FIR_CREATE",
+    "FIR_VIEW",
+    "FIR_EDIT",
+    "FIR_SUBMIT",
+    "EVIDENCE_UPLOAD",
+    "EVIDENCE_VIEW",
+    "CASE_SEARCH",
+    "AI_INSIGHTS"
+  ],
+  SI: [
+    "FIR_CREATE",
+    "FIR_VIEW",
+    "FIR_EDIT",
+    "FIR_SUBMIT",
+    "FIR_APPROVE",
+    "EVIDENCE_UPLOAD",
+    "EVIDENCE_VIEW",
+    "CASE_SEARCH",
+    "AI_INSIGHTS",
+    "VIEW_ANALYTICS"
+  ],
+  INSPECTOR: [
+    "FIR_CREATE",
+    "FIR_VIEW",
+    "FIR_EDIT",
+    "FIR_SUBMIT",
+    "FIR_APPROVE",
+    "EVIDENCE_UPLOAD",
+    "EVIDENCE_VIEW",
+    "CASE_SEARCH",
+    "AI_INSIGHTS",
+    "VIEW_ANALYTICS"
+  ],
+  DSP: [
+    "FIR_CREATE",
+    "FIR_VIEW",
+    "FIR_EDIT",
+    "FIR_SUBMIT",
+    "FIR_APPROVE",
+    "EVIDENCE_UPLOAD",
+    "EVIDENCE_VIEW",
+    "CASE_SEARCH",
+    "AI_INSIGHTS",
+    "VIEW_ANALYTICS"
+  ],
+  ASP: [
+    "FIR_CREATE",
+    "FIR_VIEW",
+    "FIR_EDIT",
+    "FIR_SUBMIT",
+    "FIR_APPROVE",
+    "EVIDENCE_UPLOAD",
+    "EVIDENCE_VIEW",
+    "CASE_SEARCH",
+    "AI_INSIGHTS",
+    "VIEW_ANALYTICS"
+  ],
+  SP: [
+    "FIR_CREATE",
+    "FIR_VIEW",
+    "FIR_EDIT",
+    "FIR_SUBMIT",
+    "FIR_APPROVE",
+    "EVIDENCE_UPLOAD",
+    "EVIDENCE_VIEW",
+    "CASE_SEARCH",
+    "AI_INSIGHTS",
+    "VIEW_ANALYTICS"
+  ],
+  DIG: [
+    "FIR_CREATE",
+    "FIR_VIEW",
+    "FIR_EDIT",
+    "FIR_SUBMIT",
+    "FIR_APPROVE",
+    "EVIDENCE_UPLOAD",
+    "EVIDENCE_VIEW",
+    "CASE_SEARCH",
+    "AI_INSIGHTS",
+    "VIEW_ANALYTICS"
+  ],
+  IG: [
+    "FIR_CREATE",
+    "FIR_VIEW",
+    "FIR_EDIT",
+    "FIR_SUBMIT",
+    "FIR_APPROVE",
+    "EVIDENCE_UPLOAD",
+    "EVIDENCE_VIEW",
+    "CASE_SEARCH",
+    "AI_INSIGHTS",
+    "VIEW_ANALYTICS"
+  ],
+  DGP: [
+    "FIR_CREATE",
+    "FIR_VIEW",
+    "FIR_EDIT",
+    "FIR_SUBMIT",
+    "FIR_APPROVE",
+    "EVIDENCE_UPLOAD",
+    "EVIDENCE_VIEW",
+    "CASE_SEARCH",
+    "AI_INSIGHTS",
+    "VIEW_ANALYTICS"
+  ],
+  ADMIN: [
+    "USER_MANAGE",
+    "SYSTEM_MANAGE"
+  ]
+};
+
+export const ROLES = {
+  ADMIN: 'ADMIN',
+  CONSTABLE: 'CONSTABLE',
+  SI: 'SI',
+  INSPECTOR: 'INSPECTOR',
+  DSP: 'DSP',
+  ASP: 'ASP',
+  SP: 'SP',
+  DIG: 'DIG',
+  IG: 'IG',
+  DGP: 'DGP'
+};
+
+// Backwards compatibility for some legacy role names
+ROLE_PERMISSIONS.ASI = ROLE_PERMISSIONS.SI;
+ROLE_PERMISSIONS.HEAD_CONSTABLE = ROLE_PERMISSIONS.CONSTABLE;
+ROLE_PERMISSIONS.ADGP = ROLE_PERMISSIONS.DGP;

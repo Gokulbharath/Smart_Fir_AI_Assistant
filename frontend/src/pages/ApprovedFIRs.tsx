@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { getFIRs, pdfUrl } from '../api/firService';
+import { getFIRs, downloadFIRPdf } from '../api/firService';
+import BackButton from '../components/BackButton';
 
 interface FIRItem {
   _id: string;
@@ -27,6 +28,7 @@ const ApprovedFIRs: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <BackButton />
       <h1 className="text-2xl font-bold">Approved FIRs ({count})</h1>
       {loading && <div>Loading…</div>}
       <div className="space-y-4">
@@ -36,7 +38,12 @@ const ApprovedFIRs: React.FC = () => {
               <div className="font-bold">{f.firNumber}</div>
               <div className="text-sm text-slate-500">{f.incident}</div>
             </div>
-            <a href={pdfUrl(f._id)} target="_blank" rel="noreferrer" className="px-4 py-2 rounded-lg bg-blue-600 text-white">Download PDF</a>
+            <button
+              onClick={() => downloadFIRPdf(f._id)}
+              className="px-4 py-2 rounded-lg bg-blue-600 text-white"
+            >
+              Download PDF
+            </button>
           </div>
         ))}
         {!loading && firs.length === 0 && <div className="text-slate-500">No approved FIRs.</div>}

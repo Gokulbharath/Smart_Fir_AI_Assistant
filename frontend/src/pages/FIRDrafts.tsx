@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getDrafts, updateDraftFIR, sendForApproval, deleteDraft } from "../api/firService";
 import { useNotifications } from "../contexts/NotificationContext";
 import { Search, Edit, Send, Save, X } from "lucide-react";
+import BackButton from "../components/BackButton";
 
 export default function FIRDrafts() {
   const { addNotification } = useNotifications();
@@ -97,6 +98,7 @@ export default function FIRDrafts() {
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6">
+      <BackButton />
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Draft FIRs</h1>
         <div className="relative w-64">

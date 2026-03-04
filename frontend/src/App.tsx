@@ -14,10 +14,10 @@ import DraftFIRCreation from './pages/DraftFIRCreation';
 import FinalFIRView from './pages/FinalFIRView';
 import EvidenceLocker from './components/EvidenceLocker';
 import CaseRetrieval from './components/CaseRetrieval';
+import ErrorBoundary from './components/ErrorBoundary';
 // import InspectorReview from './components/InspectorReview';
 import ApprovedFIRs from './pages/ApprovedFIRs';
 import InspectorDashboard from './pages/InspectorDashboard';
-import Analytics from './components/Analytics';
 import Notifications from './components/Notifications';
 import Profile from './components/Profile';
 import Settings from './components/Settings';
@@ -70,8 +70,7 @@ function App() {
                   <Route path="approved-firs" element={<ApprovedFIRs />} />
                   <Route path="final-firs" element={<FinalFIRView />} />
                   <Route path="evidence" element={<EvidenceLocker />} />
-                  <Route path="cases" element={<CaseRetrieval />} />
-                  <Route path="analytics" element={<Analytics />} />
+                  <Route path="cases" element={<ErrorBoundary><CaseRetrieval /></ErrorBoundary>} />
                   <Route path="notifications" element={<Notifications />} />
                   <Route path="profile" element={<Profile />} />
                   <Route path="settings" element={<Settings />} />

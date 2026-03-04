@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, Moon, Sun, AlertCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -10,27 +11,64 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
   const { login } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const ROLE_PATHS: Record<string, string> = {
+    ADMIN: '/dashboard/admin',
+    CONSTABLE: '/dashboard',
+    SI: '/inspector-review',
+    INSPECTOR: '/inspector-review',
+    DSP: '/inspector-review',
+    ASP: '/inspector-review',
+    SP: '/inspector-review',
+    DIG: '/inspector-review',
+    IG: '/inspector-review',
+    DGP: '/inspector-review'
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     setError('');
-    
+    setIsLoading(true);
+
+    console.log('Login attempt:', { email, password });
+
     try {
-      await login(email, password);
-    } catch (error) {
+      const result = await login(email, password);
+
+      // Results may be undefined if loginAPI threw earlier
+      if (result && result.user) {
+        const role = result.user.role;
+        if (role) {
+          const redirectPath = ROLE_PATHS[role] || '/dashboard';
+          console.log('Login successful. Redirecting to:', redirectPath);
+          navigate(redirectPath);
+        } else {
+          console.warn('Login succeeded but role missing, defaulting to /dashboard');
+          navigate('/dashboard');
+        }
+      } else {
+        console.warn('Login response invalid, redirecting to dashboard');
+        navigate('/dashboard');
+      }
+    } catch (err: any) {
+      console.error('Login error:', err);
       setError('Invalid credentials. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const demoAccounts = [
-    { email: 'officer@police.gov.in', role: 'Officer', password: 'demo123' },
-    { email: 'inspector@police.gov.in', role: 'Inspector', password: 'demo123' },
-    { email: 'admin@police.gov.in', role: 'Admin', password: 'demo123' }
+    { email: 'admin123@police.gov.in', role: 'ADMIN', password: 'admin@gov' },
   ];
+
+  const fillDemoCredentials = (account: typeof demoAccounts[0]) => {
+    setEmail(account.email);
+    setPassword(account.password);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-slate-100 dark:from-slate-900 dark:via-blue-900 dark:to-slate-800 flex items-center justify-center p-4">
@@ -58,10 +96,10 @@ const Login: React.FC = () => {
           )}
 
           {/* Login Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleLogin} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Email Address
+                Email
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-slate-500" />
@@ -71,7 +109,7 @@ const Login: React.FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="w-full pl-10 pr-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white transition-all duration-200"
-                  placeholder="officer@police.gov.in"
+                  placeholder="role.location@gov.in"
                 />
               </div>
             </div>
@@ -111,15 +149,13 @@ const Login: React.FC = () => {
 
           {/* Demo Accounts */}
           <div className="mt-8 p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
-            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Demo Accounts:</h3>
+            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Demo Account:</h3>
             <div className="space-y-2">
               {demoAccounts.map((account, index) => (
                 <button
                   key={index}
-                  onClick={() => {
-                    setEmail(account.email);
-                    setPassword(account.password);
-                  }}
+                  type="button"
+                  onClick={() => fillDemoCredentials(account)}
                   className="w-full text-left p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors"
                 >
                   <div className="text-xs text-slate-600 dark:text-slate-400">
@@ -129,7 +165,7 @@ const Login: React.FC = () => {
               ))}
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
-              Click any account above to auto-fill credentials
+              Click to auto-fill admin credentials
             </p>
           </div>
 

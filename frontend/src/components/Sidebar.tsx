@@ -1,77 +1,134 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { 
-  FileText, 
+import {
+  FileText,
   FilePlus,
   Home,
   Bot,
   ChevronRight,
-  ChevronLeft,
   CheckCircle,
   Eye,
   Shield,
-  BarChart3
+  Search,
+  FolderOpen
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
-interface SidebarProps {
-  isOpen: boolean;
-  onToggle: () => void;
+// Sidebar is always open now; props removed
+
+interface NavItem {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  path: string;
+  requiredPermission?: string;
+  role?: string; // Optional: strictly require a role match (e.g. for Admin Panel)
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
-  const { hasPermission } = useAuth();
+const Sidebar: React.FC = () => {
+  const { user, hasPermission } = useAuth();
 
-  const navItems = [
-    { icon: Home, label: 'Dashboard', path: '/dashboard', permission: null },
-    { icon: Bot, label: 'AI Chatbot', path: '/dashboard/chatbot', permission: 'create_fir' },
-    { icon: FilePlus, label: 'New FIR', path: '/dashboard/new-fir', permission: 'create_fir' },
-    { icon: FileText, label: 'FIR Drafts', path: '/dashboard/fir-drafts', permission: 'view_fir' },
-    { icon: Eye, label: 'Inspector Review', path: '/dashboard/inspector-review', permission: 'approve_fir' },
-    { icon: CheckCircle, label: 'Approved FIRs', path: '/dashboard/approved-firs', permission: 'view_fir' },
-    //{ icon: Archive, label: 'Evidence Locker', path: '/dashboard/evidence', permission: 'upload_evidence' },
-    //{ icon: Search, label: 'Case Retrieval', path: '/dashboard/cases', permission: 'search_cases' },
-    { icon: BarChart3, label: 'Analytics', path: '/dashboard/analytics', permission: 'view_analytics' },
-    //{ icon: Bell, label: 'Notifications', path: '/dashboard/notifications', permission: null },
-    //{ icon: User, label: 'Profile', path: '/dashboard/profile', permission: null },
-    //{ icon: Settings, label: 'Settings', path: '/dashboard/settings', permission: null },
-    { icon: Shield, label: 'Admin Panel', path: '/dashboard/admin', permission: 'manage_users' },
+  // Define logic for Dashboard link
+  // If user is Admin, they shouldn't see the Police Dashboard (Overview)
+  // They should see Admin Panel.
+  // We'll handle this by showing 'Dashboard' only to Police.
+  // Or renaming it.
+
+  const navItems: NavItem[] = [
+    // Police Features
+    {
+      icon: Home,
+      label: 'Dashboard',
+      path: '/dashboard',
+      requiredPermission: 'FIR_VIEW' // Basic Police permission
+    },
+    {
+      icon: Bot,
+      label: 'AI Chatbot',
+      path: '/dashboard/chatbot',
+      requiredPermission: 'AI_INSIGHTS'
+    },
+    {
+      icon: FilePlus,
+      label: 'New FIR',
+      path: '/dashboard/new-fir',
+      requiredPermission: 'FIR_CREATE'
+    },
+    {
+      icon: FileText,
+      label: 'FIR Drafts',
+      path: '/dashboard/fir-drafts',
+      requiredPermission: 'FIR_VIEW'
+    },
+    {
+      icon: Eye,
+      label: 'Inspector Review',
+      path: '/dashboard/inspector-review',
+      requiredPermission: 'FIR_APPROVE'
+    },
+    {
+      icon: CheckCircle,
+      label: 'Approved FIRs',
+      path: '/dashboard/approved-firs',
+      requiredPermission: 'FIR_VIEW'
+    },
+    {
+      icon: FolderOpen,
+      label: 'Evidence',
+      path: '/dashboard/evidence',
+      requiredPermission: 'EVIDENCE_VIEW'
+    },
+    {
+      icon: Search,
+      label: 'Case Search',
+      path: '/dashboard/cases',
+      requiredPermission: 'CASE_SEARCH'
+    },
+    // Admin Features
+    {
+      icon: Shield,
+      label: 'Admin Panel',
+      path: '/dashboard/admin',
+      role: 'ADMIN' // Strict role check preferred for Admin as permissions might be broad or shared
+    },
   ];
 
-  const filteredNavItems = navItems.filter(item => 
-    !item.permission || hasPermission(item.permission)
-  );
+  const filteredNavItems = navItems.filter(item => {
+    if (!user) return false;
+
+    // Strict Role Check (Precedence)
+    if (item.role) {
+      if (user.role !== item.role) return false;
+    }
+
+    // Permission Check
+    // If strict Role check passed (or wasn't present), check permission
+    // But if Role was present and matched, we keep it (unless permission also specified and fails)
+    if (item.role && user.role === item.role) return true;
+
+    // If Admin, exclude items that are strictly for police
+    // Admin has specific permissions ['USER_MANAGE', 'SYSTEM_MANAGE']. 
+    // Admin does NOT have 'FIR_VIEW', 'AI_INSIGHTS' etc. 
+    // So 'hasPermission' check will correctly exclude them.
+
+    if (item.requiredPermission) {
+      return hasPermission(item.requiredPermission);
+    }
+
+    return true;
+  });
 
   return (
     <>
       {/* Toggle Button - Fixed when sidebar is closed */}
-      {!isOpen && (
-        <button
-          onClick={onToggle}
-          className="fixed left-4 top-20 z-50 p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg transition-all duration-300 hover:scale-110"
-          aria-label="Open sidebar"
-        >
-          <ChevronRight className="w-5 h-5" />
-        </button>
-      )}
+
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-16 h-full bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border-r border-slate-200 dark:border-slate-700 shadow-lg overflow-y-auto transition-all duration-300 z-40 ${
-          isOpen ? 'w-64' : '-translate-x-full w-0'
-        }`}
+        className="fixed left-0 top-16 h-full w-64 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border-r border-slate-200 dark:border-slate-700 shadow-lg overflow-y-auto transition-all duration-300 z-40 pt-4"
       >
         <div className="p-4">
           {/* Header with Toggle Button */}
-          <div className="flex items-center justify-end mb-4">
-            <button
-              onClick={onToggle}
-              className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all duration-200 hover:scale-110 group"
-              aria-label="Close sidebar"
-            >
-              <ChevronLeft className="w-5 h-5 text-slate-600 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
-            </button>
-          </div>
+
 
           {/* Navigation */}
           <nav className="space-y-1">
@@ -81,11 +138,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
                 to={item.path}
                 end={item.path === '/dashboard'}
                 className={({ isActive }) =>
-                  `flex items-center justify-between px-4 py-3.5 rounded-xl text-sm font-semibold transition-all duration-200 group ${
-                    isActive
-                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg transform scale-105'
-                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400'
-                  } ${!isOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`
+                  `flex items-center justify-between px-4 py-3.5 rounded-xl text-sm font-semibold transition-all duration-200 group ${isActive
+                    ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg transform scale-105'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400'
+                  }`
                 }
               >
                 <div className="flex items-center space-x-3">

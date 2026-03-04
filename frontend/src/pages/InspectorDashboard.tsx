@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getPendingFIRs, approveFIRNew, rejectToDraft, getCounts } from '../api/firService';
 import { useNotifications } from '../contexts/NotificationContext';
 import { CheckCircle, XCircle, Eye, Clock } from 'lucide-react';
+import BackButton from '../components/BackButton';
 
 const InspectorDashboard: React.FC = () => {
   const { addNotification } = useNotifications();
@@ -85,6 +86,7 @@ const InspectorDashboard: React.FC = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6">
+      <BackButton />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
